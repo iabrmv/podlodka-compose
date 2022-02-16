@@ -14,13 +14,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,64 +75,91 @@ fun GamePage(
     ),
     reviewsCountString: String = "70M",
 ) {
+    val backGroundImageHeight = 250.dp
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colors.background)
     ) {
         BackgroundImage(
-            modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
+            modifier = Modifier
+                .height(backGroundImageHeight)
+                .align(Alignment.TopCenter),
             imageResource = backgroundImageResource
         )
-        LazyColumn(Modifier.padding(20.dp)) {
+        LazyColumn {
             item {
-                Spacer(
+                Row(
                     modifier = Modifier
-                        .background(Color.Transparent)
-                        .height(200.dp)
+                        .height(backGroundImageHeight)
                         .fillMaxWidth()
-                )
-                Header(
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colors.background,
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                        .padding(12.dp),
-                    name = appName,
-                    appIconResource = appIconResource,
-                    rating = rating
-                )
+                        .padding(32.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    CircleButton(
+                        modifier = Modifier.size(48.dp),
+                        imageVector = Icons.Filled.ArrowBack
+                    )
+                    CircleButton(
+                        modifier = Modifier.size(48.dp),
+                        imageVector = Icons.Filled.MoreHoriz
+                    )
+                }
             }
             item {
-                Tags(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp)
-                        .wrapContentHeight(),
-                    tags = tags
-                )
-            }
-            item {
-                Description(
-                    modifier = Modifier.padding(12.dp),
-                    text = description
-                )
-            }
-            item {
-                Videos(
-                    screenshotResources = screenshotResources,
-                    modifier = Modifier.padding(12.dp).height(120.dp)
-                )
-            }
-            item {
-                Rating(
-                    modifier = Modifier.padding(12.dp),
-                    rating = rating,
-                    reviewsCountString = reviewsCountString)
+                Column(Modifier
+                    .background(
+                        color = MaterialTheme.colors.background,
+                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                    )
+                    .padding(horizontal = 12.dp)
+                ) {
+                    Header(
+                        modifier = Modifier
+                            .padding(12.dp),
+                        name = appName,
+                        appIconResource = appIconResource,
+                        rating = rating,
+                        reviewsCountString = reviewsCountString
+                    )
+                    Tags(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp)
+                            .wrapContentHeight(),
+                        tags = tags
+                    )
+                    Description(
+                        modifier = Modifier
+                            .background(color = MaterialTheme.colors.background)
+                            .padding(vertical = 12.dp),
+                        text = description
+                    )
+                    Videos(
+                        screenshotResources = screenshotResources,
+                        modifier = Modifier
+                            .background(color = MaterialTheme.colors.background)
+                            .padding(vertical = 12.dp)
+                            .height(120.dp)
+                    )
+                    Rating(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = MaterialTheme.colors.background)
+                            .padding(vertical = 12.dp),
+                        rating = rating,
+                        reviewsCountString = reviewsCountString
+                    )
+                }
             }
             items(reviews) { review ->
-                ReviewItem(review)
+                ReviewItem(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = MaterialTheme.colors.background)
+                        .padding(12.dp),
+                    review = review
+                )
             }
             item {
                 Spacer(Modifier.height(120.dp))
@@ -163,7 +195,7 @@ fun BackgroundImage(
         modifier = modifier,
         painter = painterResource(id = imageResource),
         contentDescription = null,
-        contentScale = ContentScale.FillWidth
+        contentScale = ContentScale.FillBounds
     )
 }
 
@@ -172,12 +204,13 @@ fun Header(
     modifier: Modifier = Modifier,
     name: String,
     appIconResource: Int,
-    rating: Float
+    rating: Float,
+    reviewsCountString: String
 ) {
     Row(modifier = modifier.fillMaxWidth()) {
         Box(modifier = Modifier
             .size(96.dp)
-            .offset(y = (-20).dp)
+            .offset(y = (-32).dp)
             .clip(shape = RoundedCornerShape(10.dp))
             .background(color = Color.Black)
             .border(
@@ -186,24 +219,28 @@ fun Header(
                 shape = RoundedCornerShape(10.dp)
             )
             .clip(shape = RoundedCornerShape(10.dp)),
-            contentAlignment = Alignment.Center) {
+            contentAlignment = Alignment.Center
+        ) {
             Image(
                 painter = painterResource(id = appIconResource),
                 contentDescription = null
             )
         }
-        Text(
-            text = name,
-            fontSize = 32.sp,
-            color = MaterialTheme.colors.onBackground
-        )
-        RatingBar(rating)
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(
+                text = name,
+                fontSize = 32.sp,
+                color = MaterialTheme.colors.onBackground
+            )
+            Row {
+                RatingBar(rating)
+                Text(
+                    text = reviewsCountString,
+                    color = MaterialTheme.colors.onSurface
+                )
+            }
+        }
     }
-}
-
-@Composable
-fun RatingBar(rating: Float) {
-
 }
 
 @Composable
@@ -225,11 +262,11 @@ fun Tag(tag: String) {
         modifier = Modifier
             .wrapContentSize()
             .background(
-                alpha = 0.5f,
+                alpha = 0.3f,
                 brush = SolidColor(MaterialTheme.colors.primary),
                 shape = CircleShape
             )
-            .padding(vertical = 3.dp, horizontal = 6.dp),
+            .padding(vertical = 4.dp, horizontal = 8.dp),
         text = tag,
         color = MaterialTheme.colors.primary
     )
@@ -240,7 +277,11 @@ fun Description(
     modifier: Modifier = Modifier,
     text: String
 ) {
-    Text(text = text, color = MaterialTheme.colors.onSurface)
+    Text(
+        modifier = modifier,
+        text = text,
+        color = MaterialTheme.colors.onSurface
+    )
 }
 
 @Composable
@@ -264,21 +305,32 @@ fun Video(screenshotResource: Int) {
             painter = painterResource(id = screenshotResource),
             contentDescription = null
         )
-        Box(modifier = Modifier
-            .size(32.dp)
-            .background(
-                brush = SolidColor(Color.White),
-                alpha = 0.3f,
-                shape = CircleShape
-            ),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Filled.PlayArrow,
-                contentDescription = null,
-                tint = Color.White
-            )
-        }
+        CircleButton(
+            modifier = Modifier.size(36.dp),
+            imageVector = Icons.Filled.PlayArrow
+        )
+    }
+}
+
+@Composable
+fun CircleButton(
+    modifier: Modifier = Modifier,
+    imageVector: ImageVector
+) {
+    Box(modifier = modifier
+        .background(
+            brush = SolidColor(Color.White),
+            alpha = 0.3f,
+            shape = CircleShape
+        )
+        .blur(radius = 4.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            tint = Color.White
+        )
     }
 }
 
@@ -290,28 +342,36 @@ fun Rating(
 ) {
     Row(modifier = modifier) {
         Text(text = rating.toString(), fontSize = 48.sp, color = MaterialTheme.colors.onBackground)
-        Column {
-            RatingBar(rating)
+        Column(Modifier.padding(8.dp)) {
+            RatingBar((rating * 2).toInt() / 2f)
             Text("$reviewsCountString reviews", color = MaterialTheme.colors.onSurface)
         }
     }
 }
 
 @Composable
-fun ReviewItem(review: ReviewData) {
-    Column {
-        Row {
+fun ReviewItem(
+    modifier: Modifier = Modifier,
+    review: ReviewData
+) {
+    Column(modifier = modifier) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 modifier = Modifier.size(48.dp),
                 painter = painterResource(id = review.imageResource),
                 contentDescription = null
             )
-            Column {
-                Text(review.name, color = MaterialTheme.colors.onBackground)
+            Column(modifier.padding(horizontal = 4.dp)) {
+                Text(review.name, color = MaterialTheme.colors.onBackground, fontSize = 20.sp)
                 Text(review.datePosted, color = MaterialTheme.colors.onSurface)
             }
         }
         Text(review.text, color = MaterialTheme.colors.onSurface)
+        Spacer(Modifier.height(20.dp))
+        Divider(
+            Modifier
+                .height(1.dp)
+                .fillMaxWidth())
     }
 }
 
