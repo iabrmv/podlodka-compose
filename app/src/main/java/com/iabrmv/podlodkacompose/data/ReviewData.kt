@@ -1,4 +1,4 @@
-package com.iabrmv.podlodkacompose
+package com.iabrmv.podlodkacompose.data
 
 data class ReviewData(
     val imageResource: Int,

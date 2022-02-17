@@ -1,20 +1,42 @@
-package com.iabrmv.podlodkacompose
+package com.iabrmv.podlodkacompose.ui.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.iabrmv.podlodkacompose.R
+
+@Composable
+fun Rating(
+    modifier: Modifier = Modifier,
+    rating: Float,
+    reviewsCountString: String
+) {
+    Row(modifier = modifier) {
+        Text(text = rating.toString(), fontSize = 48.sp, color = MaterialTheme.colors.onBackground)
+        Column(Modifier.padding(8.dp)) {
+            RatingBar((rating * 2).toInt() / 2f)
+            Text("$reviewsCountString reviews", color = MaterialTheme.colors.onSurface)
+        }
+    }
+}
+
 
 @Composable
 fun RatingBar(
     rating: Float,
     activeColor: Color = MaterialTheme.colors.secondary,
-    inactiveColor: Color = MaterialTheme.colors.background
+    inactiveColor: Color = MaterialTheme.colors.onSurface
 ) {
     Row {
         for(i in 1..5) {
